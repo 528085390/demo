@@ -41,7 +41,6 @@ public class AdminController {
     @PutMapping
     public User update(@RequestBody UserDTO newUser){
         UserDTO rqs = newUser;
-        System.out.println(rqs.getId());
         return adminService.update(rqs.getId(), rqs.getNewUser());
     }
 
