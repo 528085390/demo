@@ -27,7 +27,9 @@ public class AdminController {
     @DeleteMapping
     public String delete(@RequestParam Long id){
         adminService.delete(id);
+        //6
         return "delete success";
+
     }
 
 
