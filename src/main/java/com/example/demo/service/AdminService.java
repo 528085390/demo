@@ -1,51 +1,57 @@
 package com.example.demo.service;
 
-import com.example.demo.dao.UserMeth;
+import com.example.demo.dao.AdminDao;
 import com.example.demo.pojo.User;
+import com.example.demo.pojo.UserDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service // 标识为bean
 public class AdminService implements IAdminService{
 
     @Autowired
-    UserMeth userMeth;
+    AdminDao adminDao;
 
     //add
     @Override
-    public void add(User user) {
-        user.setRole("ADMIN");
-        user.setStatus(1);
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
-        userMeth.save(user);
+    public User add(UserDTO newUser) {
+        User addUser = new User();
+        BeanUtils.copyProperties(newUser,addUser);
+        addUser.setRole("ADMIN");
+        addUser.setStatus(1);
+        addUser.setCreateTime(LocalDateTime.now());
+        addUser.setUpdateTime(LocalDateTime.now());
+        return adminDao.save(addUser);
     }
 
     //delete
     @Override
     public void delete(Long id) {
-        userMeth.deleteById(id);
+        adminDao.deleteById(id);
     }
 
     //find
     @Override
-    public User get(Long id) {
-        return userMeth.findById(id).get();
+    public User getUser(Long userId) {
+        if (adminDao.existsById(userId)){
+            return adminDao.findById(userId).get();
+        }
+        else return null;
     }
 
     //update
     @Override
     public User update(Long id, User newUser) {
-        if (userMeth.existsById(id)){
-            User oldUser = userMeth.findById(id).get();
+        if (adminDao.existsById(id)){
+            User oldUser = adminDao.findById(id).get();
             oldUser.setUsername(newUser.getUsername());
             oldUser.setPassword(newUser.getPassword());
             oldUser.setRole(newUser.getRole());
             oldUser.setStatus(newUser.getStatus());
-            return userMeth.save(oldUser);
+            return adminDao.save(oldUser);
         }
         return null;
     }

@@ -9,5 +9,4 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "t_user")
 public class User extends BaseUser {
-    //a
 }

@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.dao.ResponseMessage;
 import com.example.demo.pojo.User;
 import com.example.demo.pojo.UserDTO;
 import com.example.demo.service.IAdminService;
 
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,36 +17,44 @@ public class AdminController {
     @Autowired
     IAdminService adminService;
 
-
     //增加用户
     @PostMapping
-    public User add(@RequestBody User user){
-        adminService.add(user);
-        return user;
+    public ResponseMessage<User> add(@RequestBody UserDTO user){
+        return ResponseMessage.success(adminService.add(user));
     }
 
     //删除用户
-    @DeleteMapping
-    public String delete(@RequestParam Long id){
-        adminService.delete(id);
-        //6
-        return "delete success";
+    @DeleteMapping("/{userId}")
+    public ResponseMessage<User> delete(@PathVariable Long userId){
+        User deleteUser = adminService.getUser(userId);
+        if (adminService.getUser(userId) == null){
+            return ResponseMessage.error();
+        }
+        else {
+            adminService.delete(userId);
+            return ResponseMessage.success(deleteUser);
+        }
 
     }
 
+    //查询用户信息 url : /user/userId
+    @GetMapping("/{userId}")
+    public ResponseMessage<User> get(@PathVariable Long userId){
+        if(adminService.getUser(userId) != null){
+            return ResponseMessage.success(adminService.getUser(userId));
+        }
+        else return ResponseMessage.error();
 
-    //查询用户信息
-    @GetMapping
-    public User getInfo(@RequestParam Long id){
-        return adminService.get(id);
     }
 
     //修改用户信息
     @PutMapping
-    public User update(@RequestBody UserDTO newUser){
+    public ResponseMessage<User> update(@RequestBody UserDTO newUser){
         UserDTO rqs = newUser;
-        return adminService.update(rqs.getId(), rqs.getNewUser());
+        if(adminService.update(rqs.getId(), rqs.getNewUser()) != null){
+            User updataUser = adminService.update(rqs.getId(), rqs.getNewUser());
+            return ResponseMessage.success(updataUser);
+        }
+        else return ResponseMessage.error();
     }
-
-
 }
