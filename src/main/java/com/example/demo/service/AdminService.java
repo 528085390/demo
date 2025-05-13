@@ -44,13 +44,15 @@ public class AdminService implements IAdminService{
 
     //update
     @Override
-    public User update(Long id, User newUser) {
+    public User update(Long id, UserDTO newUser) {
         if (adminDao.existsById(id)){
             User oldUser = adminDao.findById(id).get();
+
             oldUser.setUsername(newUser.getUsername());
             oldUser.setPassword(newUser.getPassword());
             oldUser.setRole(newUser.getRole());
-            oldUser.setStatus(newUser.getStatus());
+            oldUser.setUpdateTime(LocalDateTime.now());
+
             return adminDao.save(oldUser);
         }
         return null;

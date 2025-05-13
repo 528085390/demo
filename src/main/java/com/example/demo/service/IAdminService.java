@@ -12,7 +12,7 @@ public interface IAdminService {
 
     void delete(Long id);
 
-    User update(Long id,User newUser);
+    User update(Long id,UserDTO newUser);
 
     User getUser(Long userId);
 }
