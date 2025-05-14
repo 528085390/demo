@@ -6,7 +6,6 @@ import lombok.Setter;
 import java.util.List;
 
 @Data
-@Setter
 public class Result<T> {
     /** 响应码 */
     private Integer code;

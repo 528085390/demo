@@ -21,7 +21,7 @@ public class AdminService implements IAdminService{
         User addUser = new User();
         BeanUtils.copyProperties(newUser,addUser);
         addUser.setRole("ADMIN");
-        addUser.setStatus(1);
+        addUser.setStatus(0);
         addUser.setCreateTime(LocalDateTime.now());
         addUser.setUpdateTime(LocalDateTime.now());
         return adminDao.save(addUser);
@@ -57,8 +57,6 @@ public class AdminService implements IAdminService{
         }
         return null;
     }
-
-
 
 
 }
