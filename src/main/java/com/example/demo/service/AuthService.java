@@ -32,7 +32,7 @@ public class AuthService {
             authDao.save(newUser);
             switch (role) {
                 case "TEACHER": {
-                    Teacher newTeacher = new Teacher(authDao.findByUsername(username).getId(), createTime, updateTime);
+                    Teacher newTeacher = new Teacher(authDao.findByUsername(username).getId(), username, createTime, updateTime);
                     teacherDao.save(newTeacher);
                 }
                 case "STUDENT": {
@@ -82,5 +82,16 @@ public class AuthService {
         }
         return false;
     }
+
+    public boolean checkInfo(String username, String needRole){
+        if (authDao.findByUsername(username) != null){
+            User user = authDao.findByUsername(username);
+            if (user.getStatus() == 1 && user.getRole().equals(needRole)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

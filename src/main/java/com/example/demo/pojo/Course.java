@@ -17,6 +17,7 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     /** 课程编号 */
     private String courseNo;
     /** 课程名称 */
