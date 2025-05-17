@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -51,5 +52,15 @@ public class TeacherService {
             return Result.success(course);
         }
         return Result.error(Result.PARAM_ERROR, "课程已存在");
+    }
+
+
+
+    public List<CourseDTO> getAllCourse() {
+        Iterable<Course> findAllCourse = courseDao.findAll();
+        List<Course> allCourse = (List<Course>)findAllCourse;
+        List<CourseDTO> listCourse = allCourse.stream().map(course -> new CourseDTO(course.getCourseName(), course.getMajorId(), course.getGrade(), course.getCourseType(), course.getCredit(), course.getIsPublic(), course.getStatus())).toList();
+        return listCourse;
+
     }
 }

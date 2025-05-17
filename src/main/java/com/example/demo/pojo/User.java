@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "t_user")
 @Setter
+@Getter
 @NoArgsConstructor
 public class User extends BaseUser {
     @Id

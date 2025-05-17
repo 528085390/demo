@@ -20,5 +20,17 @@ public class CourseDTO {
     private BigDecimal credit;
     /** 是否公开(0-否,1-是) */
     private Integer isPublic;
+    /** 课程状态(1-已提交,2-审核通过,3-审核不通过,4-公开,5-隐藏) */
+    private Integer status;
 
+    public CourseDTO(String courseName, Long majorId, Integer grade, Integer courseType, BigDecimal credit, Integer isPublic, Integer status){
+        if(isPublic == 0) return;
+        this.courseName = courseName;
+        this.majorId = majorId;
+        this.grade = grade;
+        this.courseType = courseType;
+        this.credit = credit;
+        this.isPublic = isPublic;
+        this.status = status;
+    }
 }
