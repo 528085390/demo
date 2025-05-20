@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.AuthDao;
+import com.example.demo.dao.Result;
+import com.example.demo.dao.StudentDao;
 import com.example.demo.dao.TeacherDao;
+import com.example.demo.pojo.Student;
 import com.example.demo.pojo.Teacher;
 import com.example.demo.pojo.User;
 import com.example.demo.pojo.UserDTO;
@@ -17,6 +20,8 @@ public class AuthService {
     AuthDao authDao;
     @Autowired
     TeacherDao teacherDao;
+    @Autowired
+    StudentDao studentDao;
 
 
     public User register(UserDTO registerUser) {
@@ -32,11 +37,14 @@ public class AuthService {
             authDao.save(newUser);
             switch (role) {
                 case "TEACHER": {
-                    Teacher newTeacher = new Teacher(authDao.findByUsername(username).getId(), username, createTime, updateTime);
+                    Teacher newTeacher = new Teacher(authDao.findByUsername(username).getId(), username);
                     teacherDao.save(newTeacher);
+                    break;
                 }
                 case "STUDENT": {
-
+                    Student newStudent = new Student(authDao.findByUsername(username).getId(), username, username);
+                    studentDao.save(newStudent);
+                    break;
                 }
                 case "ADMIN": {
 
@@ -47,7 +55,7 @@ public class AuthService {
         return null;
     }
 
-    public User login(UserDTO loginUser) {
+    public Result<UserDTO> login(UserDTO loginUser) {
         String username = loginUser.getUsername();
         String password = loginUser.getPassword();
         String role = loginUser.getRole();
@@ -59,15 +67,15 @@ public class AuthService {
                     user.setStatus(1);
                     user.setUpdateTime(LocalDateTime.now());
                     authDao.save(user);
-                } else {
-                    user.setUsername("1");
+                    return Result.success(loginUser);
                 }
-                return user;
+                else {
+                    return Result.error(Result.PARAM_ERROR, "已登录");
+                }
             }
-            user.setUsername("-1");
-            return user;
+            return Result.error(Result.PARAM_ERROR,"用户名或密码或角色错误");
         }
-        return null;
+        return Result.error(Result.PARAM_ERROR,"无此用户");
     }
 
     public boolean logout(String username) {

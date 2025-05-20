@@ -36,11 +36,9 @@ public class Teacher extends BaseUser {
     /** 邮箱 */
     private String email;
 
-    public Teacher(Long userId, String name,LocalDateTime crateTime, LocalDateTime updateTime){
+    public Teacher(Long userId, String name){
         this.userId = userId;
         this.name = name;
-        super.setCreateTime(crateTime);
-        super.setUpdateTime(updateTime);
     }
 
 }

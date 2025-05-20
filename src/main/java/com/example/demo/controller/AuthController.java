@@ -16,16 +16,8 @@ public class AuthController {
 
     @RequestMapping("/login")
     @PostMapping
-    public Result<User> login(@RequestBody UserDTO loginUser) {
-        User user = authService.login(loginUser);
-        if(user != null){
-            return switch (user.getUsername()) {
-                case "1" -> Result.error(Result.PARAM_ERROR, "已登录");
-                case "-1" -> Result.error(Result.PARAM_ERROR, "用户名或密码或角色错误");
-                default -> Result.success(user);
-            };
-        }
-        else return Result.error(Result.PARAM_ERROR,"无此用户");
+    public Result<UserDTO> login(@RequestBody UserDTO loginUser) {
+        return authService.login(loginUser);
     }
 
     @RequestMapping("/register")

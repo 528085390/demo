@@ -25,7 +25,7 @@ public class TeacherController {
     AuthService  authService;
 
     // add course
-    @RequestMapping("/{username}/course")
+    @RequestMapping("/{username}/addCourse")
     @PostMapping
     public Result<Course> addCourse(@PathVariable String username, @RequestBody CourseDTO newCourse) {
         if(authService.checkInfo(username, ROLE))   {

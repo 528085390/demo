@@ -1,13 +1,15 @@
 package com.example.demo.pojo;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
+import java.time.LocalDateTime;
+
 @Data
-public class UserDTO extends BaseUser{
+@AllArgsConstructor
+public class UserDTO {
 
+    private String username;
+    private String password;
+    private String role;
 
 }

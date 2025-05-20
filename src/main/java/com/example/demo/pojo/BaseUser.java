@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 // 用户类
 
 @Data
-@Getter
 public abstract class BaseUser {
 
     private Long id;
