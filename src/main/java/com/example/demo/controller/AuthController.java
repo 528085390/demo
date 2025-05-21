@@ -14,14 +14,12 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
-    @RequestMapping("/login")
-    @PostMapping
+    @PostMapping("/login")
     public Result<UserDTO> login(@RequestBody UserDTO loginUser) {
         return authService.login(loginUser);
     }
 
-    @RequestMapping("/register")
-    @PostMapping
+    @PostMapping("/register")
     public Result<User> register(@RequestBody UserDTO registerUser) {
         User user = authService.register(registerUser);
         if (user != null){
@@ -30,8 +28,7 @@ public class AuthController {
         return Result.error(Result.PARAM_ERROR,"用户名已存在");
     }
 
-    @RequestMapping("/{username}/logout")
-    @PutMapping
+    @PutMapping("/{username}/logout")
     public Result<User> logout(@PathVariable String username) {
         if(authService.logout(username)){
             return Result.success();

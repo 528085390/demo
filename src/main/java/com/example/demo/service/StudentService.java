@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +49,40 @@ public class StudentService {
     public List<CourseDTO> getCourse(String username) {
         Student student = studentDao.findByUsername(username);
         List<Long> courseIds = student.getCourseIds();
+        if (courseIds == null){
+            return null;
+        }
         List<Optional<Course>> list = courseIds.stream().map(courseId -> courseDao.findById(courseId)).toList();
-        List<Course> allCourse = list.stream().map(course -> course.get()).toList();
-        List<CourseDTO> allCourseDTO = allCourse.stream().map(course -> new CourseDTO(course.getCourseName(), course.getMajorId(), course.getGrade(), course.getCourseType(), course.getCredit(), course.getIsPublic(), course.getStatus())).toList();
+        List<Course> Course = list.stream().map(course -> course.get()).toList();
+        List<CourseDTO> allCourseDTO = Course.stream().map(course -> new CourseDTO(course.getId(), course.getCourseName(), course.getMajorId(), course.getGrade(), course.getCourseType(), course.getCredit(), course.getIsPublic(), course.getStatus())).toList();
         return allCourseDTO;
+    }
+
+    public List<CourseDTO> getAllCourse() {
+        Iterable<Course> allCourse = courseDao.findAll();
+        if(allCourse.iterator().next() == null){
+            return null;
+        }
+        List<Course> allCourseList = (List<Course>)allCourse;
+        List<CourseDTO> allCourseDTO = allCourseList.stream().map(course -> new CourseDTO(course.getId(), course.getCourseName(), course.getMajorId(), course.getGrade(), course.getCourseType(), course.getCredit(), course.getIsPublic(), course.getStatus())).toList();
+        return allCourseDTO;
+    }
+
+    public List<CourseDTO> chooseCourse(String username, Long courseId) {
+        Student student = studentDao.findByUsername(username);
+        List<Long> courseIds = student.getCourseIds();
+        if (courseIds == null){
+            courseIds = new ArrayList<>();
+        }
+        if(courseIds.contains(courseId)){
+            return null;
+        }
+        if(courseDao.findById(courseId).isPresent()){
+            courseIds.add(courseId);
+            student.setCourseIds(courseIds);
+            studentDao.save(student);
+            return getCourse(username);
+        }
+        return null;
     }
 }

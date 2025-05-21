@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class CourseDTO {
 
+    Long id;
     /** 课程名称 */
     private String courseName;
     /** 适用专业ID */
@@ -25,6 +26,18 @@ public class CourseDTO {
 
     public CourseDTO(String courseName, Long majorId, Integer grade, Integer courseType, BigDecimal credit, Integer isPublic, Integer status){
         if(isPublic == 0) return;
+        this.courseName = courseName;
+        this.majorId = majorId;
+        this.grade = grade;
+        this.courseType = courseType;
+        this.credit = credit;
+        this.isPublic = isPublic;
+        this.status = status;
+    }
+
+    public CourseDTO(Long id, String courseName, Long majorId, Integer grade, Integer courseType, BigDecimal credit, Integer isPublic, Integer status){
+        if(isPublic == 0) return;
+        this.id = id;
         this.courseName = courseName;
         this.majorId = majorId;
         this.grade = grade;

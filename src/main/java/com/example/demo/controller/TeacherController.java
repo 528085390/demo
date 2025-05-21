@@ -25,8 +25,7 @@ public class TeacherController {
     AuthService  authService;
 
     // add course
-    @RequestMapping("/{username}/addCourse")
-    @PostMapping
+    @PostMapping("/{username}/addCourse")
     public Result<Course> addCourse(@PathVariable String username, @RequestBody CourseDTO newCourse) {
         if(authService.checkInfo(username, ROLE))   {
             Result<Course> addCourseResult = teacherService.addCourse(username, newCourse);
@@ -36,8 +35,7 @@ public class TeacherController {
     }
 
     //get all course
-    @RequestMapping("/{username}/allCourse")
-    @GetMapping
+    @GetMapping("/{username}/allCourse")
     public Result<List<CourseDTO>> getCourse(@PathVariable String username) {
         if (authService.checkInfo(username, ROLE)){
             List<CourseDTO> allCourse = teacherService.getAllCourse();
@@ -45,21 +43,6 @@ public class TeacherController {
         }
         return Result.error(Result.FORBIDDEN,"未登录或无权访问");
     }
-
-
-
-
-    //    @RequestMapping("/{username}")
-//    @GetMapping("/{username}")
-//    public Result<Teacher> getInfo(@PathVariable String username) {
-//        if (authService.checkInfo(username, ROLE)){
-//            Teacher teacher = teacherService.getInfo(username);
-//            if(teacher != null){
-//                return Result.success(teacher);
-//            }
-//        }
-//        return Result.error(Result.FORBIDDEN,"未登录或无权访问");
-//    }
 
 
 

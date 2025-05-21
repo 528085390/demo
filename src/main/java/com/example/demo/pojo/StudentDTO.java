@@ -13,6 +13,9 @@ public class StudentDTO {
     private String name;
     private String studentNo;
 
+    public StudentDTO() {
+    }
+
     public StudentDTO(String username, String password, String name) {
         this.username = username;
         this.password = password;
