@@ -17,6 +17,7 @@ public class Student extends BaseUser{
     private Long id;
 
     private String username;
+
     private Long userId;
     private String name;
     private String studentNo;

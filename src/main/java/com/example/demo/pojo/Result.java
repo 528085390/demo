@@ -1,7 +1,6 @@
-package com.example.demo.dao;
+package com.example.demo.pojo;
 
 import lombok.Data;
-import lombok.Setter;
 
 import java.util.List;
 

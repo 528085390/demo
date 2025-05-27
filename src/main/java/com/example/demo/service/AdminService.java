@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service // 标识为bean
-public class AdminService implements IAdminService{
+@Service
+public class AdminService{
 
     @Autowired
     AdminDao adminDao;
 
     //add
-    @Override
     public User add(UserDTO newUser) {
         User addUser = new User();
         BeanUtils.copyProperties(newUser,addUser);
@@ -28,13 +27,13 @@ public class AdminService implements IAdminService{
     }
 
     //delete
-    @Override
+
     public void delete(Long id) {
         adminDao.deleteById(id);
     }
 
     //find
-    @Override
+
     public User getUser(Long userId) {
         if (adminDao.existsById(userId)){
             return adminDao.findById(userId).get();
@@ -43,7 +42,6 @@ public class AdminService implements IAdminService{
     }
 
     //update
-    @Override
     public User update(Long id, UserDTO newUser) {
         if (adminDao.existsById(id)){
             User oldUser = adminDao.findById(id).get();

@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dao.Result;
+import com.example.demo.pojo.Result;
 import com.example.demo.pojo.User;
 import com.example.demo.pojo.UserDTO;
-import com.example.demo.service.IAdminService;
 
+import com.example.demo.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user") // 接口路径
 public class AdminController {
 
-    @Autowired
-    IAdminService adminService;
+
+    AdminService adminService;
 
     //增加用户
     @PostMapping

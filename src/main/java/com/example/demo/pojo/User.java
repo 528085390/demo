@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "t_user")
-@Setter
-@Getter
 @NoArgsConstructor
 public class User extends BaseUser {
     @Id

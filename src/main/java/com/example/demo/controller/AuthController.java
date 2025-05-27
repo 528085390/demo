@@ -1,21 +1,24 @@
 package com.example.demo.controller;
 
-import com.example.demo.dao.Result;
+import com.example.demo.pojo.Result;
 import com.example.demo.pojo.User;
 import com.example.demo.pojo.UserDTO;
 import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Objects;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
     AuthService authService;
 
     @PostMapping("/login")
-    public Result<UserDTO> login(@RequestBody UserDTO loginUser) {
+    public Result<Map<String, Object>> login(@RequestBody UserDTO loginUser) {
         return authService.login(loginUser);
     }
 

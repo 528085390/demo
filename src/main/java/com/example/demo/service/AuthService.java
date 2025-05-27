@@ -1,17 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.AuthDao;
-import com.example.demo.dao.Result;
+import com.example.demo.pojo.*;
 import com.example.demo.dao.StudentDao;
 import com.example.demo.dao.TeacherDao;
-import com.example.demo.pojo.Student;
-import com.example.demo.pojo.Teacher;
-import com.example.demo.pojo.User;
-import com.example.demo.pojo.UserDTO;
+import com.example.demo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -22,6 +21,8 @@ public class AuthService {
     TeacherDao teacherDao;
     @Autowired
     StudentDao studentDao;
+    @Autowired
+    JwtUtil jwtUtil;
 
 
     public User register(UserDTO registerUser) {
@@ -55,46 +56,62 @@ public class AuthService {
         return null;
     }
 
-    public Result<UserDTO> login(UserDTO loginUser) {
+    public Result<Map<String, Object>> login(UserDTO loginUser) {
         String username = loginUser.getUsername();
         String password = loginUser.getPassword();
         String role = loginUser.getRole();
 
-        if (authDao.findByUsername(username) != null) {
-            User user = authDao.findByUsername(username);
+        User user = authDao.findByUsername(username);
+
+        if (user != null) {
             if (user.getPassword().equals(password) && user.getRole().equals(role)) {
-                if (user.getStatus() == 0) {
-                    user.setStatus(1);
-                    user.setUpdateTime(LocalDateTime.now());
-                    authDao.save(user);
-                    return Result.success(loginUser);
+
+                user.setUpdateTime(LocalDateTime.now());
+                authDao.save(user);
+
+                String no = "";
+                String name = "";
+                switch (role) {
+                    case "TEACHER": {
+                        name = teacherDao.findByUserId(user.getId()).getName();
+                        no = teacherDao.findByUserId(user.getId()).getTeacherNo();
+                        break;
+                    }
+                    case "STUDENT": {
+                        name = studentDao.findByUserId(user.getId()).getName();
+                        no = studentDao.findByUserId(user.getId()).getStudentNo();
+                        break;
+                    }
                 }
-                else {
-                    return Result.error(Result.PARAM_ERROR, "已登录");
-                }
+
+                String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+                Map<String, Object> tokenMap = new HashMap<>();
+                tokenMap.put("token", token);
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(user.getId());
+                userInfo.setRole(user.getRole());
+                userInfo.setUsername(user.getUsername());
+                userInfo.setName(name);
+                userInfo.setNo(no);
+
+                tokenMap.put("userInfo", userInfo);
+
+                return Result.success(tokenMap);
+
             }
-            return Result.error(Result.PARAM_ERROR,"用户名或密码或角色错误");
+            return Result.error(Result.PARAM_ERROR, "用户名或密码或角色错误");
         }
-        return Result.error(Result.PARAM_ERROR,"无此用户");
+        return Result.error(Result.PARAM_ERROR, "无此用户");
     }
 
     public boolean logout(String username) {
-        if(authDao.findByUsername(username) != null){
-            User user = authDao.findByUsername(username);
-            if(user.getStatus() == 1){
+        User user = authDao.findByUsername(username);
+        if (user != null) {
+            if (user.getStatus() == 1) {
                 user.setStatus(0);
                 user.setUpdateTime(LocalDateTime.now());
                 authDao.save(user);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean checkInfo(String username, String needRole){
-        if (authDao.findByUsername(username) != null){
-            User user = authDao.findByUsername(username);
-            if (user.getStatus() == 1 && user.getRole().equals(needRole)){
                 return true;
             }
         }

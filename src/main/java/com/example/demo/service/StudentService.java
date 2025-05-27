@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dao.AuthDao;
 import com.example.demo.dao.CourseDao;
-import com.example.demo.dao.Result;
+import com.example.demo.pojo.Result;
 import com.example.demo.dao.StudentDao;
 import com.example.demo.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,9 @@ public class StudentService {
 
     public Result<StudentDTO> getInfo(String username) {
         Student findStudent = studentDao.findByUsername(username);
-        if (findStudent != null) {
-            StudentDTO student = new StudentDTO(findStudent.getUsername(), findStudent.getPassword(), findStudent.getName());
+        User findUser = authDao.findByUsername(username);
+        if (findStudent != null && findUser != null) {
+            StudentDTO student = new StudentDTO(findUser.getUsername(), findUser.getPassword(), findStudent.getName());
             return Result.success(student);
         }
         return Result.error(Result.PARAM_ERROR, "无此用户");
@@ -77,7 +78,7 @@ public class StudentService {
         if(courseIds.contains(courseId)){
             return null;
         }
-        if(courseDao.findById(courseId).isPresent()){
+        if(courseDao.existsById(courseId) && courseDao.findById(courseId).get().getCourseType() == 2){
             courseIds.add(courseId);
             student.setCourseIds(courseIds);
             studentDao.save(student);
