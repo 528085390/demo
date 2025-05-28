@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.pojo.Result;
 import com.example.demo.pojo.Course;
 import com.example.demo.pojo.CourseDTO;
+import com.example.demo.pojo.User;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +22,17 @@ public class TeacherController {
     @Autowired
     TeacherService teacherService;
     @Autowired
-    AuthService  authService;
+    AuthService authService;
+
 
     private boolean isAuthorized(HttpServletRequest request, String usernameInPath) {
         String usernameFromJwt = (String) request.getAttribute("usernameFromJwt");
         String roleFromJwt = (String) request.getAttribute("roleFromJwt");
 
         if (usernameFromJwt == null || roleFromJwt == null || !EXPECTED_ROLE.equals(roleFromJwt)) {
+            return false;
+        }
+        if (authService.isLogin(usernameFromJwt)){
             return false;
         }
         return usernameFromJwt.equals(usernameInPath);

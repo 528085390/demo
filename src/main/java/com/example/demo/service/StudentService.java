@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.dao.AuthDao;
 import com.example.demo.dao.CourseDao;
+import com.example.demo.exception.DuplicateResourceException;
+import com.example.demo.exception.OperationNotPermittedException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.pojo.Result;
 import com.example.demo.dao.StudentDao;
 import com.example.demo.pojo.*;
@@ -9,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,31 +28,39 @@ public class StudentService {
     public Result<StudentDTO> getInfo(String username) {
         Student findStudent = studentDao.findByUsername(username);
         User findUser = authDao.findByUsername(username);
-        if (findStudent != null && findUser != null) {
-            StudentDTO student = new StudentDTO(findUser.getUsername(), findUser.getPassword(), findStudent.getName());
-            return Result.success(student);
+        if (findStudent == null || findUser == null) {
+            throw new DuplicateResourceException("无此用户");
         }
-        return Result.error(Result.PARAM_ERROR, "无此用户");
-
+        StudentDTO student = new StudentDTO(findUser.getUsername(), findUser.getPassword(), findStudent.getName());
+        return Result.success(student);
     }
 
     public void changeInfo(String username, StudentDTO newStudentDTO) {
         User user = authDao.findByUsername(username);
+        if (user == null){
+            throw new ResourceNotFoundException("用户 ‘" + username + "’ 不存在");
+        }
         user.setUsername(newStudentDTO.getUsername());
         user.setPassword(newStudentDTO.getPassword());
         user.setUpdateTime(LocalDateTime.now());
         authDao.save(user);
+
         Student student = studentDao.findByUsername(username);
+        if(student == null){
+            throw new ResourceNotFoundException("学生 ‘" + username + "’ 不存在");
+        }
         student.setName(newStudentDTO.getName());
         student.setUsername(newStudentDTO.getUsername());
-        student.setPassword(newStudentDTO.getPassword());
         studentDao.save(student);
     }
 
     public List<CourseDTO> getCourse(String username) {
         Student student = studentDao.findByUsername(username);
+        if (student == null) {
+            throw new ResourceNotFoundException("学生用户 ‘" + username +"’ 不存在");
+        }
         List<Long> courseIds = student.getCourseIds();
-        if (courseIds == null){
+        if (courseIds == null) {
             return null;
         }
         List<Optional<Course>> list = courseIds.stream().map(courseId -> courseDao.findById(courseId)).toList();
@@ -61,29 +71,35 @@ public class StudentService {
 
     public List<CourseDTO> getAllCourse() {
         Iterable<Course> allCourse = courseDao.findAll();
-        if(allCourse.iterator().next() == null){
-            return null;
+        if (allCourse.iterator().next() == null) {
+            throw new ResourceNotFoundException("没有可选课程");
         }
-        List<Course> allCourseList = (List<Course>)allCourse;
+        List<Course> allCourseList = (List<Course>) allCourse;
         List<CourseDTO> allCourseDTO = allCourseList.stream().map(course -> new CourseDTO(course.getId(), course.getCourseName(), course.getMajorId(), course.getGrade(), course.getCourseType(), course.getCredit(), course.getIsPublic(), course.getStatus())).toList();
         return allCourseDTO;
     }
 
     public List<CourseDTO> chooseCourse(String username, Long courseId) {
         Student student = studentDao.findByUsername(username);
+        if (student == null){
+            throw new ResourceNotFoundException("学生用户" + username + "不存在");
+        }
         List<Long> courseIds = student.getCourseIds();
-        if (courseIds == null){
-            courseIds = new ArrayList<>();
+        if (courseIds.contains(courseId)) {
+            throw new DuplicateResourceException("该学生已选该课程");
         }
-        if(courseIds.contains(courseId)){
-            return null;
+        if (!courseDao.existsById(courseId)){
+            throw new ResourceNotFoundException("课程不存在");
         }
-        if(courseDao.existsById(courseId) && courseDao.findById(courseId).get().getCourseType() == 2){
-            courseIds.add(courseId);
-            student.setCourseIds(courseIds);
-            studentDao.save(student);
-            return getCourse(username);
+
+        Course chooseCourse = courseDao.findById(courseId).get();
+        if (!chooseCourse.getIsPublic().equals(1)){
+            throw new OperationNotPermittedException("该课程非公开课程");
         }
-        return null;
+
+        courseIds.add(courseId);
+        student.setCourseIds(courseIds);
+        studentDao.save(student);
+        return getCourse(username);
     }
 }

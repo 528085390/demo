@@ -33,7 +33,7 @@ public class StudentController {
     }
 
     //get info
-    @GetMapping("/{username}/getInfo")
+    @GetMapping("/{username}")
     public Result<StudentDTO> getInfo(@PathVariable String username, HttpServletRequest request) {
         if (isAuthorized(request, username)){
             return studentService.getInfo(username);
@@ -42,7 +42,7 @@ public class StudentController {
     }
 
     //change info
-    @PutMapping("/{username}/changeInfo")
+    @PutMapping("/{username}")
     public Result<StudentDTO> changeInfo(@PathVariable String username, @RequestBody StudentDTO studentDTO, HttpServletRequest request) {
         if (isAuthorized(request, username)){
             studentService.changeInfo(username, studentDTO);

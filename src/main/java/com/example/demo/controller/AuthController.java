@@ -25,18 +25,16 @@ public class AuthController {
     @PostMapping("/register")
     public Result<User> register(@RequestBody UserDTO registerUser) {
         User user = authService.register(registerUser);
-        if (user != null){
+        if (user != null) {
             return Result.success(user);
         }
-        return Result.error(Result.PARAM_ERROR,"用户名已存在");
+        return Result.error(Result.PARAM_ERROR, "用户名已存在");
     }
 
     @PutMapping("/{username}/logout")
     public Result<User> logout(@PathVariable String username) {
-        if(authService.logout(username)){
-            return Result.success();
-        }
-        return Result.error(Result.FORBIDDEN,"无法登出");
+        authService.logout(username);
+        return Result.success();
     }
 
 

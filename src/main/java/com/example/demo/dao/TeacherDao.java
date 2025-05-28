@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface TeacherDao extends CrudRepository<Teacher, Long> {
 
     Teacher findByUserId(Long userId);
+
 }
