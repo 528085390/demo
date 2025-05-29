@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface AuthDao extends CrudRepository<User, Long> {
     User findByUsername(String username);
 
+
+    Boolean existsByUsername(String username);
 }
 
 

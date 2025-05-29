@@ -133,4 +133,8 @@ public class AuthService {
         }
         else return false;
     }
+
+    public Boolean isExists(String username){
+        return authDao.existsByUsername(username);
+    }
 }

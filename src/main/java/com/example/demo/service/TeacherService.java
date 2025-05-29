@@ -27,7 +27,7 @@ public class TeacherService {
             throw new DuplicateResourceException("课程名称：" + newCourse.getCourseName() + "已存在");
         }
         Long id = authDao.findByUsername(username).getId();
-        Teacher teacher = teacherDao.findById(id).get();
+        Teacher teacher = teacherDao.findByUserId(id);
         Long teacherId = teacher.getId();
 
         long nextId = courseDao.count() + 1;

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,6 +37,10 @@ public class StudentService {
     }
 
     public void changeInfo(String username, StudentDTO newStudentDTO) {
+        if (Objects.equals(newStudentDTO.getName(), "") || Objects.equals(newStudentDTO.getPassword(), "") || Objects.equals(newStudentDTO.getUsername(), "")){
+            throw new DuplicateResourceException("参数为空");
+        }
+
         User user = authDao.findByUsername(username);
         if (user == null){
             throw new ResourceNotFoundException("用户 ‘" + username + "’ 不存在");
@@ -43,6 +48,7 @@ public class StudentService {
         user.setUsername(newStudentDTO.getUsername());
         user.setPassword(newStudentDTO.getPassword());
         user.setUpdateTime(LocalDateTime.now());
+        user.setStatus(0);
         authDao.save(user);
 
         Student student = studentDao.findByUsername(username);
