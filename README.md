@@ -1,0 +1,232 @@
+# 项目说明文档
+
+## 项目说明
+
+### 1. 项目概述
+
+本项目是一个基于 Java Spring Boot 的示例应用程序，旨在提供一个教学管理系统的核心功能，包括用户认证（注册、登录、登出）、学生管理、教师管理和课程管理。
+
+* **名称**: demo
+* **描述**: demo
+* **Spring Boot 版本**: 3.4.5
+* **Java 版本**: 17
+* **主要依赖**:
+  * Spring Web (用于构建 RESTful API)
+  * Spring Data JPA (用于数据持久化)
+  * MySQL Connector/J (MySQL 数据库驱动)
+  * Lombok (简化 POJO 开发)
+  * JJWT (用于 JWT 的生成和验证)
+* **核心功能**:
+  * 用户认证: 提供注册、登录、登出功能。
+  * 角色管理: 支持学生 (STUDENT) 和教师 (TEACHER) 角色。
+  * 学生功能: 查看/修改个人信息、查看所有课程、选择课程、查看已选课程。
+  * 教师功能: 添加课程、查看所有课程。
+
+### 2. 项目结构
+
+项目遵循典型的 Spring Boot MVC 结构：
+
+* `com.example.demo`: 主包。
+  * `DemoApplication.java`: Spring Boot 主应用程序类。
+  * `config`: 包含配置类。
+    * `JwtRequestFilter.java`: 用于 JWT 认证和授权的过滤器。
+  * `controller`: 包含 REST API 控制器。
+    * `AuthController.java`: 处理认证 (登录、注册、登出)。
+    * `StudentController.java`: 处理学生相关的操作。
+    * `TeacherController.java`: 处理教师相关的操作。
+    * `AdminController.java`: (已注释) 可能用于管理员操作。
+  * `dao`: 数据访问对象 (Repositories)。
+    * `AuthDao.java`: 针对 `User` 实体的 JPA Repository。
+    * `CourseDao.java`: 针对 `Course` 实体的 JPA Repository。
+    * `StudentDao.java`: 针对 `Student` 实体的 JPA Repository。
+    * `TeacherDao.java`: 针对 `Teacher` 实体的 JPA Repository。
+    * `AdminDao.java`: (已注释) 可能用于管理员用户数据。
+  * `exception`: 自定义异常类和全局异常处理器。
+    * `AuthenticationException.java`, `DuplicateResourceException.java`, `InvalidInputException.java`, `OperationNotPermittedException.java`, `ResourceNotFoundException.java`。
+    * `GlobalExceptionHandler.java`: 全局处理这些自定义异常。
+  * `pojo`: Plain Old Java Objects (包含实体和 DTO)。
+    * 实体 (Entities): `BaseUser.java` (抽象类), `User.java`, `Student.java`, `Teacher.java`, `Course.java`。
+    * 数据传输对象 (DTOs): `UserDTO.java`, `StudentDTO.java`, `CourseDTO.java`, `UserInfo.java`。
+    * `Result.java`: 标准 API 响应包装类。
+  * `service`: 业务逻辑层。
+    * `AuthService.java`: 处理注册、登录、登出等认证逻辑。
+    * `StudentService.java`: 处理学生相关的业务逻辑。
+    * `TeacherService.java`: 处理教师相关的业务逻辑。
+    * `AdminService.java`: (已注释) 可能用于管理员业务逻辑。
+  * `util`: 工具类。
+    * `JwtUtil.java`: 用于生成和验证 JWT。
+
+---
+
+## 数据库设计说明
+
+数据库实体主要包括用户、学生、教师和课程。
+
+* **`t_user` (用户信息表)** - 对应 `User.java`
+  * `id` (BIGINT, PK, AI): 用户唯一标识。
+  * `username` (VARCHAR): 用户名，唯一。
+  * `password` (VARCHAR): 用户密码 (建议存储加密后的密码)。
+  * `role` (VARCHAR): 用户角色 (例如 "STUDENT", "TEACHER")。
+  * `status` (INT): 用户状态 (0: 登出/未激活, 1: 登录)。
+  * `create_time` (DATETIME): 记录创建时间。
+  * `update_time` (DATETIME): 记录最后更新时间。
+
+* **`t_student` (学生信息表)** - 对应 `Student.java`
+  * `id` (BIGINT, PK, AI): 学生唯一标识。
+  * `user_id` (BIGINT): 关联到 `t_user.id`，外键。
+  * `username` (VARCHAR): 学生用户名。
+  * `name` (VARCHAR): 学生姓名。
+  * `student_no` (VARCHAR): 学号。
+  * `course_ids` (JSON 或 TEXT): 存储学生选择的课程 ID 列表。
+
+* **`t_teacher` (教师信息表)** - 对应 `Teacher.java`
+  * `id` (BIGINT, PK, AI): 教师唯一标识。
+  * `user_id` (BIGINT): 关联到 `t_user.id`，外键。
+  * `teacher_no` (VARCHAR): 教师工号。
+  * `department_id` (BIGINT): 所属院系 ID
+  * `name` (VARCHAR): 教师姓名。
+  * `phone` (VARCHAR): 联系电话。
+  * `email` (VARCHAR): 邮箱。
+
+* **`t_course` (课程信息表)** - 对应 `Course.java`
+  * `id` (BIGINT, PK, AI): 课程唯一标识。
+  * `course_no` (VARCHAR): 课程编号。
+  * `course_name` (VARCHAR): 课程名称。
+  * `teacher_id` (BIGINT): 授课教师 ID, 关联到 `t_teacher.id`。
+  * `major_id` (BIGINT): 适用专业 ID (当前项目中未提供对应的 Major 实体)。
+  * `grade` (INT): 适用年级。
+  * `course_type` (INT): 课程性质 (1-必修, 2-选修)。
+  * `credit` (DECIMAL): 学分。
+  * `is_public` (INT): 是否公开 (0-否, 1-是)。
+  * `status` (INT): 课程状态 (1-已提交, 2-审核通过, 3-审核不通过, 4-公开, 5-隐藏)。
+  * `create_time` (DATETIME): 创建时间。
+  * `update_time` (DATETIME): 更新时间。
+
+---
+
+## 配置说明
+
+### `application.properties`
+
+主要的应用程序配置在此文件中：
+
+* `spring.application.name=demo`: 定义应用名称。
+* **数据库连接**:
+  * `spring.datasource.url=jdbc:mysql://localhost:3306/guagua_sys?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC`: JDBC URL，连接到本地 MySQL 的 `guagua_sys` 数据库。
+  * `spring.datasource.username=root`: 数据库用户名。
+  * `spring.datasource.password=123456`: 数据库密码。
+* `server.port=8080`: 应用监听的端口号。
+* **JPA/Hibernate 配置**:
+  * `spring.jpa.show-sql=true`: 在控制台打印执行的 SQL 语句。
+  * `spring.jpa.hibernate.ddl-auto=update`: Hibernate 会根据实体类自动更新数据库表结构 (在开发环境中方便，生产环境慎用)。
+  * `spring.jpa.properties.hibernate.format_sql=true`: 格式化显示的 SQL 语句。
+
+### `pom.xml`
+
+Maven 项目对象模型文件，定义了项目依赖、插件和构建配置。
+
+* **Spring Boot Starter Parent**: `3.4.5`，提供了默认的依赖管理和插件配置。
+* **Java 版本**: `17`。
+* **关键依赖**: `spring-boot-starter-data-jpa`, `spring-boot-starter-web`, `mysql-connector-j`, `lombok`, `jjwt` (api, impl, jackson)。
+
+### JWT 配置 (`JwtUtil.java`)
+
+* **密钥 (Secret Key)**: `SECRET_KEY` 是通过 `Keys.secretKeyFor(SignatureAlgorithm.HS512)` 动态生成的。 为了保证每次应用重启时密钥一致（使得旧token在重启后依然有效），或者在多实例部署时，此密钥应从外部配置文件加载或固定。
+* **过期时间 (Expiration Time)**: `EXPIRATION_TIME` 设置为1小时 (`1000 * 60 * 60` 毫秒)。
+
+### IntelliJ IDEA 配置 (`.idea/` 目录)
+
+这些文件主要用于 IntelliJ IDEA 开发环境的配置：
+
+* `compiler.xml`: 定义了编译器的设置，例如 Lombok 的注解处理器路径和模块编译选项 (`-parameters`)。
+* `dataSources.xml`: IntelliJ IDEA 中配置的数据源信息，例如连接到 `guagua_sys` 数据库。
+* `misc.xml`: 项目的 SDK (JDK 17) 和 Maven 设置。
+* 这些配置主要影响开发环境，不直接参与应用的运行时行为。
+
+---
+
+## 使用说明
+
+### 1. 环境准备
+
+* JDK 17 或更高版本。
+* Maven 3.6+。
+* MySQL 8.0+ 数据库服务。
+
+### 2. 数据库配置
+
+1.  确保 MySQL 服务正在运行。
+2.  创建一个名为 `guagua_sys` 的数据库。
+3.  根据 `application.properties` 中的配置，确保 MySQL 用户 (默认为 `root`) 和密码 (默认为 `123456`) 正确，并且该用户有权限访问 `guagua_sys` 数据库。如果需要，修改 `src/main/resources/application.properties` 中的数据库连接信息。
+
+### 3. 项目构建与运行
+
+1. **构建项目**:
+   在项目根目录下打开终端或命令行，执行以下 Maven 命令：
+
+   ```bash
+   mvn clean install
+   ```
+
+2. **运行项目**:
+   构建成功后，可以通过以下方式之一运行应用：
+
+   * 使用 Maven Spring Boot 插件：
+
+     ```bash
+     mvn spring-boot:run
+     ```
+
+   * 直接运行 JAR 包 (位于 `target/` 目录下，例如 `demo-0.0.1-SNAPSHOT.jar`)：
+
+     ```bash
+     java -jar target/demo-0.0.1-SNAPSHOT.jar
+     ```
+
+     应用默认将在 `http://localhost:8080` 启动。
+
+### 4. API 交互示例 (使用 Postman 或 Apifox)
+
+* **用户注册**:
+
+  * 方法: `POST`
+
+  * URL: `http://localhost:8080/api/auth/register`
+
+  * 请求体 (JSON):
+
+    ```json
+    {
+      "username": "student1",
+      "password": "password123",
+      "role": "STUDENT"
+    }
+    ```
+
+* **用户登录**:
+
+  * 方法: `POST`
+
+  * URL: `http://localhost:8080/api/auth/login`
+
+  * 请求体 (JSON):
+
+    ```json
+    {
+      "username": "student1",
+      "password": "password123",
+      "role": "STUDENT"
+    }
+    ```
+
+  * 成功后会返回包含 `token` 和 `userInfo` 的 JSON 对象。请保存此 `token`。
+
+* **访问受保护的端点 (例如获取学生信息)**:
+
+  * 方法: `GET`
+  * URL: `http://localhost:8080/api/student/student1`
+  * 请求头:
+    * `Authorization`: `{从登录接口获取到的token值}` (注意: `JwtRequestFilter` 设计为直接接收token，不带 "Bearer " 前缀)
+
+---
+
