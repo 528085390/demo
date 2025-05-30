@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+//  老师控制器
 @RestController
 @RequestMapping("/api/teacher")
 public class TeacherController {
@@ -39,7 +39,7 @@ public class TeacherController {
         return usernameFromJwt.equals(usernameInPath);
     }
 
-    // add course
+    //  添加课程
     @PostMapping("/{username}/addCourse")
     public Result<Course> addCourse(@PathVariable String username, @RequestBody CourseDTO newCourse, HttpServletRequest request) {
         if (isAuthorized(request, username)) {
@@ -49,7 +49,7 @@ public class TeacherController {
         return Result.error(Result.FORBIDDEN, "未授权访问或Token无效");
     }
 
-    //get all course
+    //  获取所有课程
     @GetMapping("/{username}/getAllCourse")
     public Result<List<CourseDTO>> getCourse(@PathVariable String username, HttpServletRequest request) {
         if (isAuthorized(request, username)) {

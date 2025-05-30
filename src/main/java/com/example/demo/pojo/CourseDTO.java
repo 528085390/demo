@@ -2,7 +2,7 @@ package com.example.demo.pojo;
 import lombok.Data;
 import java.math.BigDecimal;
 
-
+// 课程DTO，用于交互
 @Data
 public class CourseDTO {
 

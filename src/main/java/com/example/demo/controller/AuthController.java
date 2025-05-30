@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Objects;
 
+//用户登陆注册登出
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -17,11 +18,13 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
+    //登录
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@RequestBody UserDTO loginUser) {
         return authService.login(loginUser);
     }
 
+    //注册
     @PostMapping("/register")
     public Result<User> register(@RequestBody UserDTO registerUser) {
         User user = authService.register(registerUser);
@@ -31,6 +34,7 @@ public class AuthController {
         return Result.error(Result.PARAM_ERROR, "用户名已存在");
     }
 
+    //登出
     @PutMapping("/{username}/logout")
     public Result<User> logout(@PathVariable String username) {
         authService.logout(username);

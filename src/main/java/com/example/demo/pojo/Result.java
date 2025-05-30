@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
+//  响应结果
 @Data
 public class Result<T> {
     /** 响应码 */
@@ -85,7 +86,7 @@ class PageResult<T> {
     /** 数据列表 */
     private List<T> list;
 
-    // getter setter 方法省略
+
 }
 
 

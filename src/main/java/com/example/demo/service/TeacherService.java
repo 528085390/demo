@@ -22,7 +22,10 @@ public class TeacherService {
     @Autowired
     CourseDao courseDao;
 
+
+    // 添加课程
     public Result<Course> addCourse(String username, CourseDTO newCourse) {
+        //  课程存在判断
         if (courseDao.existsCourseByCourseName(newCourse.getCourseName())) {
             throw new DuplicateResourceException("课程名称：" + newCourse.getCourseName() + "已存在");
         }
@@ -30,6 +33,7 @@ public class TeacherService {
         Teacher teacher = teacherDao.findByUserId(id);
         Long teacherId = teacher.getId();
 
+        // 获取课程编号
         long nextId = courseDao.count() + 1;
         String courseNo = "CS" + String.format("%03d", nextId);
 
@@ -51,7 +55,7 @@ public class TeacherService {
 
     }
 
-
+    //  获取全部课程
     public List<CourseDTO> getAllCourse() {
         Iterable<Course> findAllCourse = courseDao.findAll();
         List<Course> allCourse = (List<Course>) findAllCourse;

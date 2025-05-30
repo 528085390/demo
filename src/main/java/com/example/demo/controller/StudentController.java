@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//  学生控制器
 @RestController
 @RequestMapping("/api/student")
 public class StudentController {
@@ -37,7 +38,7 @@ public class StudentController {
         return usernameFromJwt.equals(usernameInPath);
     }
 
-    //get info
+    //  获取个人信息
     @GetMapping("/{username}")
     public Result<StudentDTO> getInfo(@PathVariable String username, HttpServletRequest request) {
         if (isAuthorized(request, username)) {
@@ -46,7 +47,8 @@ public class StudentController {
         return Result.error(Result.FORBIDDEN, "未授权访问或Token无效");
     }
 
-    //change info
+    //  修改个人信息
+    //  ！修改后会自动退出登录！
     @PutMapping("/{username}")
     public Result<StudentDTO> changeInfo(@PathVariable String username, @RequestBody StudentDTO studentDTO, HttpServletRequest request) {
         if (isAuthorized(request, username)) {
@@ -56,7 +58,7 @@ public class StudentController {
         return Result.error(Result.FORBIDDEN, "未授权访问或Token无效");
     }
 
-    //get course
+    // 获取已选课程
     @GetMapping("/{username}/getCourse")
     public Result<List<CourseDTO>> getCourse(@PathVariable String username, HttpServletRequest request) {
         if (isAuthorized(request, username)) {
@@ -66,7 +68,7 @@ public class StudentController {
         return Result.error(Result.FORBIDDEN, "未授权访问或Token无效");
     }
 
-    // get all course
+    // 获取所有课程
     @GetMapping("/{username}/getAllCourse")
     public Result<List<CourseDTO>> getAllCourse(HttpServletRequest request) {
         String roleFromJwt = (String) request.getAttribute("roleFromJwt");
@@ -77,7 +79,7 @@ public class StudentController {
         return Result.error(Result.FORBIDDEN, "未授权访问或Token无效");
     }
 
-    //choose course
+    //  选课
     @PutMapping("/{username}/chooseCourse")
     public Result<List<CourseDTO>> chooseCourse(@PathVariable String username, @RequestBody Long courseId, HttpServletRequest request) {
         if (isAuthorized(request, username)) {

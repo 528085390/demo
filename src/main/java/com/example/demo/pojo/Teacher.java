@@ -8,8 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+//  教师类
+
 /**
- * 教师实体类
+ * id 教师表里的唯一标识（未启用）
+ * userId 用户表里的id
+ * name 姓名
+ * phone 电话（未启用）
+ * email 邮箱（未启用）
  */
 @Entity
 @Table(name = "t_teacher")

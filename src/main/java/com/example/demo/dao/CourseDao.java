@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface CourseDao extends CrudRepository<Course, Long> {
 
     boolean existsCourseByCourseName(String courseName);
+
+    //  统计课程数
     long count();
 
 }

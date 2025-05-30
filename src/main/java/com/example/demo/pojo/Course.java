@@ -41,16 +41,4 @@ public class Course {
     /** 更新时间 */
     private LocalDateTime updateTime;
 
-    @Override
-    public String toString() {
-        return "Course{" +
-                "courseName='" + courseName + '\'' +
-                ", courseNo='" + courseNo + '\'' +
-                ", majorId=" + majorId +
-                ", grade=" + grade +
-                ", courseType=" + courseType +
-                ", credit=" + credit +
-                ", isPublic=" + isPublic +
-                '}';
-    }
 }

@@ -26,9 +26,12 @@ public class StudentService {
     @Autowired
     CourseDao courseDao;
 
+    //  获取个人信息
     public Result<StudentDTO> getInfo(String username) {
         Student findStudent = studentDao.findByUsername(username);
         User findUser = authDao.findByUsername(username);
+
+        //  判断是否存在
         if (findStudent == null || findUser == null) {
             throw new DuplicateResourceException("无此用户");
         }
@@ -36,11 +39,14 @@ public class StudentService {
         return Result.success(student);
     }
 
+    //  修改个人信息
     public void changeInfo(String username, StudentDTO newStudentDTO) {
+
+        //  参数判断
         if (Objects.equals(newStudentDTO.getName(), "") || Objects.equals(newStudentDTO.getPassword(), "") || Objects.equals(newStudentDTO.getUsername(), "")){
             throw new DuplicateResourceException("参数为空");
         }
-
+        //  用户存在判断
         User user = authDao.findByUsername(username);
         if (user == null){
             throw new ResourceNotFoundException("用户 ‘" + username + "’ 不存在");
@@ -60,11 +66,15 @@ public class StudentService {
         studentDao.save(student);
     }
 
+    //  获取已选课程
     public List<CourseDTO> getCourse(String username) {
         Student student = studentDao.findByUsername(username);
+
+        //  用户存在判断
         if (student == null) {
             throw new ResourceNotFoundException("学生用户 ‘" + username +"’ 不存在");
         }
+        //  从List中获取已选课程
         List<Long> courseIds = student.getCourseIds();
         if (courseIds == null) {
             return null;
@@ -75,8 +85,11 @@ public class StudentService {
         return allCourseDTO;
     }
 
+
+    // 获取所有课程
     public List<CourseDTO> getAllCourse() {
         Iterable<Course> allCourse = courseDao.findAll();
+        //  判断是否有课可以选
         if (allCourse.iterator().next() == null) {
             throw new ResourceNotFoundException("没有可选课程");
         }
@@ -85,20 +98,29 @@ public class StudentService {
         return allCourseDTO;
     }
 
+
+    //  选课
     public List<CourseDTO> chooseCourse(String username, Long courseId) {
         Student student = studentDao.findByUsername(username);
+        //  用户存在判断
         if (student == null){
             throw new ResourceNotFoundException("学生用户" + username + "不存在");
         }
         List<Long> courseIds = student.getCourseIds();
+
+        // 是否已选课程判断
         if (courseIds.contains(courseId)) {
             throw new DuplicateResourceException("该学生已选该课程");
         }
+
+        //  课程存在判断
         if (!courseDao.existsById(courseId)){
             throw new ResourceNotFoundException("课程不存在");
         }
 
         Course chooseCourse = courseDao.findById(courseId).get();
+
+        //  课程状态判断
         if (!chooseCourse.getIsPublic().equals(1)){
             throw new OperationNotPermittedException("该课程非公开课程");
         }

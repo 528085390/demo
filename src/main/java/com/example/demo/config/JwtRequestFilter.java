@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+//  JWT 请求过滤器
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -32,9 +33,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = null;
         String role = null;
 
-        // 1. 检查请求头是否存在 "Authorization"
+        //检查请求头是否存在 "Authorization"
         if (authorizationHeader != null && !authorizationHeader.isEmpty()) {
-            // 直接将整个 authorizationHeader 作为 JWT
             jwt = authorizationHeader;
             try {
                 username = jwtUtil.extractUsername(jwt);
